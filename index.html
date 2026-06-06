@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Daily List</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root {
+    --sky: #b3dced;
+    --sky-deep: #29b8e5;
+    --sky-deeper: #1486a9;
+    --ink: #2a2a3a;
+    --ink-light: #5a5a7a;
+    --cream: #faf8f4;
+    --gold: #c9a84c;
+    --gold-light: #e8cc7a;
+    --blush: #e8d5c4;
+    --sage: #7a9e8a;
+    --card-bg: rgba(250,248,244,0.96);
+    --section-warm: #f5ede3;
+    --section-cool: #e3eef5;
+    --section-sage: #e3f0e8;
+    --section-lavender: #ede3f5;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 300;
+    background: linear-gradient(160deg, #c8e8f5 0%, #29b8e5 45%, #b8dff0 100%);
+    min-height: 100vh;
+    color: var(--ink);
+    padding: 16px;
+  }
+
+  #app {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .app-header {
+    text-align: center;
+    padding: 24px 0 18px;
+    position: relative;
+  }
+
+  .app-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    font-weight: 300;
+    font-style: italic;
+    color: white;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .app-focus {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,0.9);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+    min-height: 1.4em;
+  }
+  .app-subtitle {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 200;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .btn {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 300;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    padding: 10px 22px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: white;
+  }
+  .btn-primary:hover { background: #3a3a5a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+
+  .btn-secondary {
+    background: var(--sky-deeper);
+    color: white;
+    border: 1px solid rgba(255,255,255,1);
+    backdrop-filter: blur(4px);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.45); transform: translateY(-1px); }
+
+  /* MAIN CARD */
+  .main-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  /* SECTIONS */
+  .section {
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .section:last-child { border-bottom: none; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .section-label {
+    font-size: 0.62rem;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+  }
+
+  /* COLOR ACCENTS PER SECTION */
+  .sec-warmup { background: var(--section-warm); }
+  .sec-list { background: #fdfcfa; }
+  .sec-weights { background: #f0f0f8; }
+  .sec-pilates { background: #f0f5f0; }
+  .sec-yoga { background: #fdfcfa; }
+
+  .yoga-subsection {
+    margin-bottom: 14px;
+  }
+
+  .yoga-subsection-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    opacity: 0.7;
+    margin-bottom: 6px;
+    padding-left: 2px;
+  }
+
+  /* ITEMS */
+  .item-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    transition: background 0.15s;
+    cursor: default;
+  }
+  .item:hover { background: rgba(0,0,0,0.03); }
+
+  .item-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid #c0c0d0;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+  }
+  .item-check:hover { border-color: var(--sky-deep); }
+  .item.done .item-check {
+    background: var(--sky-deep);
+    border-color: var(--sky-deep);
+  }
+  .item.done .item-check::after {
+    content: '✓';
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  .item-text {
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    flex: 1;
+    line-height: 1.4;
+  }
+  .item.done .item-text {
+    text-decoration: line-through;
+    color: #aaa;
+  }
+
+  .item-num {
+    font-size: 0.65rem;
+    color: #ccc;
+    font-weight: 200;
+    letter-spacing: 0.05em;
+    min-width: 18px;
+    text-align: right;
+  }
+
+  /* MANAGE PAGE */
+  #manage-page {
+    display: none;
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .manage-header {
+    padding: 20px 24px 16px;
+    background: var(--ink);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .manage-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .manage-sections {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .manage-section {
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .manage-section-header {
+    padding: 12px 16px;
+    background: #f5f3ef;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .manage-section-title {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .manage-section-count {
+    font-size: 0.65rem;
+    color: var(--ink-light);
+    background: rgba(0,0,0,0.07);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  .manage-section-body {
+    padding: 10px 12px;
+    display: none;
+  }
+  .manage-section-body.open { display: block; }
+
+  .manage-item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 4px;
+    border-radius: 6px;
+  }
+  .manage-item-row:hover { background: rgba(0,0,0,0.03); }
+
+  .manage-item-text {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--ink);
+  }
+
+  .btn-delete {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.15s;
+    line-height: 1;
+  }
+  .btn-delete:hover { color: #e05555; }
+
+  .add-item-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .add-item-input {
+    flex: 1;
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 300;
+    font-size: 0.82rem;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 8px;
+    padding: 7px 12px;
+    outline: none;
+    background: white;
+    color: var(--ink);
+  }
+  .add-item-input:focus { border-color: var(--sky-deep); }
+
+  .btn-add {
+    background: var(--sky-deep);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-add:hover { background: #1aa0cc; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-light);
+  }
+  .empty-state p { font-size: 0.9rem; margin-bottom: 16px; font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; }
+
+  /* FOOTER */
+  .app-footer {
+    text-align: center;
+    padding: 8px 0 24px;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .hide-checked .item.done { display: none; }
+
+  .btn-secondary.active {
+    background: rgba(255,255,255,0.6);
+    color: var(--ink);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section { animation: fadeIn 0.35s ease both; }
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.1s; }
+  .section:nth-child(3) { animation-delay: 0.15s; }
+  .section:nth-child(4) { animation-delay: 0.2s; }
+  .section:nth-child(5) { animation-delay: 0.25s; }
+
+  /* CHEVRON */
+  .chevron { transition: transform 0.2s; display: inline-block; }
+  .chevron.open { transform: rotate(180deg); }
+
+  @media (max-width: 480px) {
+    .app-title { font-size: 2.2rem; }
+    .section { padding: 14px 16px; }
+    .manage-sections { padding: 10px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div class="app-title">Daily List</div>
+    <div class="app-focus" id="app-focus"></div>
+    <div class="app-subtitle" id="list-date"></div>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="generateList()">✦ Randomize</button>
+      <button class="btn btn-secondary" id="hide-btn" onclick="toggleHideChecked()">Hide Checked</button>
+      <button class="btn btn-secondary" onclick="toggleManage()">Manage Items</button>
+    </div>
+  </header>
+
+  <div id="main-view">
+    <div class="main-card" id="list-card"></div>
+  </div>
+
+  <div id="manage-page">
+    <div class="manage-header">
+      <span class="manage-title">Manage Items</span>
+      <button class="btn btn-secondary" onclick="toggleManage()" style="padding:8px 16px;">← Back</button>
+    </div>
+    <div class="manage-sections" id="manage-sections-container"></div>
+  </div>
+
+  <div class="app-footer">your daily practice</div>
+</div>
+
+<script>
+'use strict';
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const DEFAULT_DATA = {
+  ambrosia: ['Today'],
+  nouns: ['Patience','Curiosity','Boldness','Presence','Clarity','Warmth','Openness','Steadiness','Grace','Stillness','Spaciousness','Aliveness','Centeredness','Vitality','Equanimity','Delight','Tenderness','Slowness','Noticing','Receptivity','Allowing','Trust','Softness','Pause','Surrender','Play','Courage','Renewal','Wonder','Gratitude','Forgiveness','Connection','Acceptance','Wholeness','Joy','Unfolding','Becoming','Wakefulness','Rootedness','Expansiveness','Fluidity','Groundedness','Wildness','Intention','Enough','Vibrance','Luminosity'],
+  breaths: ['Bastrika','No Effort','3 Part','Alternate Nasal','Kapala Bhati','Ujjayi','Pitta Softening','Box','Straw','Bees'],
+  wupositions: ['Laying','Sitting','Hands and Knees','Standing','Kneeling'],
+  meditations: ['Breath','Chakra','Open Awareness','Aum','Metta'],
+
+  yummyextras: ['Read','Drink Tea or Coffee','Laundry','Email/Text/Phone Call','Clean','Write/Art','Weights and Pilates (See Below)','Walk','Meditate and Yoga (See Below)','Duolingo'],
+
+  anjenays: ['Knee Up','With Twist','High','Low','Airplane Arms','Lizard','Open Leg'],
+  dd: ['On Ball','Plain','One Leg','One Leg Open','With Twist','Dolphin'],
+  planks: ['One Leg','One Leg Knee In With Twists','Plank DD Pratapana','Plank UD Pratapana','Knee In','Vashistasana'],
+
+  standing: ['Goddess','Upward Hand Pose','Tadasana','Uttasana','Utkatasana','Utkatasana With Twist','Crescent Lunge','Parsvakonasana','Revolved Parsvakonasana','Trikonasana','Standing Half Moon','Virabhadrasana I','Virabhadrasana II','Virabhadrasana III','Revolved Triangle','Revolved Warrior I','Reverse Warrior','Chair','Parsvottanasana','Half Forward Fold','Revolved Goddess (Hands On Knees)','Cross-Legged Forward Fold','Bear Pose'],
+
+  wideangle: ['Wide Angle Leg Stretch A','Wide Angle Leg Stretch B (Hands On Hips)','Wide Angle Leg Stretch C (Interlace)','Wide Angle Leg Stretch D (Gorilla)','Wide Angle Leg Stretch With Twist','Side Wide Angle Leg Stretch'],
+
+  balances: ['Utthita Hasta Padangustasana A','Utthita Hasta Padangustasana B','Utthita Hasta Padangustasana C','Dangle','Balancing Half Moon','Tree','Standing Split','Eagle','Crow','Crow With Twist','Tittibhasana','Dancer','Eka Pada Utkatasana (#4)','Bird of Paradise'],
+
+  backbends: ['Locust','Bridge','Half Bow','Bow','Camel','Half Locust','Up Dog ==> Child\'s','Cobra ==> Child\'s','Eka Pada Rajakapotasana'],
+
+  countertwists: ['Easy Twist','Windshield Wiper'],
+
+  seatedtwists: ['Virasana With Twist','Marichyasana A (One Leg Straight Open Twist)','Marichyasana B (Both Knees Bent Open Twist)','Marichyasana C (Closed One Leg Straight)','Marichyasana D (Closed Both Knees Bent)','Gomukhasana Twist','Revolved Janu Sirsasana','Mermaid','Twisted Deer','Bharadvaja 1','Bharadvaja 2','Boat Pose Twist','Bound Malasana With Twist','Cow Face Pose Twist','Thread the Needle','Thread the Needle Bound','Marichyasana Side Bend Knee Hug','Marichyasana Leg Up','Mongoose'],
+
+  sitting: ['Malasana','Lotus','Half Lotus','Hero','Dandasana','Navasana','Sukhasana','Malasana With Bind','Gomukhasana','Gomukhasana Side Bend','Gomukhasana Forward Fold','Upavistha Konasana','Arrow','Janu Sirsasana','Log Stacking Pose','Marichyasana Forward Fold','Upward Plank','Easy Interlace Hands Behind','Split','Bound Angle','Gate Pose','Beku Pose'],
+
+  inversions: ['Half Shoulder Stand','Plow','Bija','Shoulder Stand','Viparita Karani','Head Stand','Handstand','Fish'],
+
+  endingposes: ['Pigeon','Supta Eka Pada Kapotasana','Forward Fold','Couch','Supta UHP A','Supta UHP B','Supta UHP C','Anapana','Supta Gomukhasana','Twisted Tree','Supported Fish'],
+
+  supine: ['Supine Twist','Sleeping Half Frog','Supta Badhakonasana','Happy Baby'],
+
+  weights: ['Side Steps','Clamshell','Bent Over Row','Lateral Raise','Quadraped Row','V Raise','Chest Fly','Standing Chest Press','Laying Chest Press','Dumbbell Pullover For Lats','Bicep','Bent Over Triceps','Hands And Knees Triceps','Ball Down Dog','Ball Hamstring Curl','Ball Pass','Ball Dead Bug'],
+
+  pilatesbar: ['The Hundred','The Roll-Up','The Roll-Over','Single Leg Circles','Donkey Kicks','Rolling Like a Ball','Saw','Single Leg Stretch','Double Leg Stretch','The Teaser','High Scissors','Boomerang','Side Bend','Seal','Control Balance','Swimming','Crab','Kneeling Side Kicks','Sitting Rotate','Heel Tap (One Leg)','Butt Ups'],
+};
+
+// Section metadata for manage page
+const SECTION_META = [
+  { key: 'yummyextras', label: 'Daily List Items' }
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+
+let data = loadData();
+let checkedItems = loadChecked();
+let currentListId = null;
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('dailylist_data');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function saveData() {
+  localStorage.setItem('dailylist_data', JSON.stringify(data));
+}
+
+function loadChecked() {
+  try {
+    const saved = localStorage.getItem('dailylist_checked');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return {};
+}
+
+function saveChecked() {
+  localStorage.setItem('dailylist_checked', JSON.stringify(checkedItems));
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+
+function pick(arr, n) {
+  if (!arr || arr.length === 0) return [];
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(n, arr.length));
+}
+
+function pickOne(arr) {
+  if (!arr || arr.length === 0) return '';
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function todayStr() {
+  return new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+}
+
+// ─── GENERATE ────────────────────────────────────────────────────────────────
+
+function generateList() {
+  currentListId = Date.now();
+  checkedItems = {};
+  saveChecked();
+
+  const noun = pickOne(data.nouns);
+  document.getElementById('app-focus').textContent = `with a Focus on ${noun}`;
+  document.getElementById('list-date').textContent = todayStr();
+
+  const card = document.getElementById('list-card');
+  card.innerHTML = '';
+
+  // WARM-UP
+  const breath = pickOne(data.breaths);
+  const wupos = pickOne(data.wupositions);
+  renderSection(card, 'Begin Your Day', 'sec-warmup', [
+    `${breath} Breath`,
+    `${wupos} — 6 Spine Warm-Up`,
+  ]);
+
+  // DAILY LIST
+  const listItems = shuffle(data.yummyextras);
+  renderSection(card, 'Daily List', 'sec-list', listItems, true);
+
+  // WEIGHTS
+  const weightItems = pick(data.weights, 3);
+  renderSection(card, 'Weights', 'sec-weights', weightItems);
+
+  // PILATES BAR
+  const pilatesItems = pick(data.pilatesbar, 3);
+  renderSection(card, 'Pilates Bar', 'sec-pilates', pilatesItems);
+
+  // YOGA
+  renderYogaSection(card);
+}
+
+function renderSection(parent, label, cssClass, items, numbered) {
+  const sec = document.createElement('div');
+  sec.className = `section ${cssClass}`;
+
+  const hdr = document.createElement('div');
+  hdr.className = 'section-header';
+  hdr.innerHTML = `<span class="section-label">${label}</span><span class="section-line"></span>`;
+  sec.appendChild(hdr);
+
+  const ul = document.createElement('ul');
+  ul.className = 'item-list';
+  items.forEach((text, i) => {
+    ul.appendChild(makeItem(text, i, numbered));
+  });
+  sec.appendChild(ul);
+  parent.appendChild(sec);
+}
+
+function makeItem(text, index, numbered) {
+  const li = document.createElement('li');
+  const itemId = `item_${currentListId}_${text.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'')}`;
+  li.className = 'item' + (checkedItems[itemId] ? ' done' : '');
+  li.dataset.id = itemId;
+
+  const check = document.createElement('span');
+  check.className = 'item-check';
+  check.onclick = () => toggleCheck(li, itemId);
+
+  const textEl = document.createElement('span');
+  textEl.className = 'item-text';
+  textEl.textContent = text;
+
+  if (numbered) {
+    const num = document.createElement('span');
+    num.className = 'item-num';
+    num.textContent = index + 1;
+    li.appendChild(num);
+  }
+
+  li.appendChild(check);
+  li.appendChild(textEl);
+  return li;
+}
+
+function toggleCheck(li, itemId) {
+  li.classList.toggle('done');
+  checkedItems[itemId] = li.classList.contains('done');
+  saveChecked();
+}
+
+function renderYogaSection(parent) {
+  const sec = document.createElement('div');
+  sec.className = 'section sec-yoga';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'section-header';
+  hdr.innerHTML = `<span class="section-label">Yoga</span><span class="section-line"></span>`;
+  sec.appendChild(hdr);
+
+  // Build yoga items with subsection labels
+  const yogaGroups = [
+    {
+      label: 'Anjanayasana',
+      items: (() => {
+        const picks = pick(data.anjenays, 2);
+        return [
+          `${picks[0] || ''} Anjanayasana → Parsvottanasana toes down`,
+          `${picks[1] || ''} Anjanayasana → Parsvottanasana toes up`,
+        ];
+      })()
+    },
+    { label: 'Down Dog', items: [`Adho Mukha Svanasana — ${pickOne(data.dd)}`] },
+    { label: 'Plank', items: [`${pickOne(data.planks)} Plank`] },
+    { label: 'Standing  ×6', items: pick(data.standing, 6) },
+    { label: 'Wide Angle', items: [pickOne(data.wideangle)] },
+    { label: 'Balance', items: [pickOne(data.balances)] },
+    { label: 'Backbend', items: [pickOne(data.backbends)] },
+    { label: 'Counter Twist', items: [pickOne(data.countertwists)] },
+    { label: 'Seated Twists  ×2', items: pick(data.seatedtwists, 2) },
+    { label: 'Sitting  ×5', items: pick(data.sitting, 5) },
+    { label: 'Inversion', items: [pickOne(data.inversions)] },
+    { label: 'Ending Poses  ×4', items: pick(data.endingposes, 4) },
+    { label: 'Supine', items: [pickOne(data.supine)] },
+    { label: 'Meditation', items: [`${pickOne(data.meditations)} Meditation`] },
+    { label: 'Close', items: ['Savasana'] },
+  ];
+
+  yogaGroups.forEach(group => {
+    const sub = document.createElement('div');
+    sub.className = 'yoga-subsection';
+
+    const ul = document.createElement('ul');
+    ul.className = 'item-list';
+    group.items.forEach((text, i) => {
+      ul.appendChild(makeItem(text, i, false));
+    });
+    sub.appendChild(ul);
+    sec.appendChild(sub);
+  });
+
+  parent.appendChild(sec);
+}
+
+// ─── MANAGE PAGE ─────────────────────────────────────────────────────────────
+
+let manageOpen = false;
+let hideChecked = false;
+
+function toggleHideChecked() {
+  hideChecked = !hideChecked;
+  const card = document.getElementById('list-card');
+  card.classList.toggle('hide-checked', hideChecked);
+  const btn = document.getElementById('hide-btn');
+  btn.textContent = hideChecked ? 'Show Checked' : 'Hide Checked';
+  btn.classList.toggle('active', hideChecked);
+}
+
+function toggleManage() {
+  manageOpen = !manageOpen;
+  document.getElementById('main-view').style.display = manageOpen ? 'none' : 'block';
+  document.getElementById('manage-page').style.display = manageOpen ? 'block' : 'none';
+  if (manageOpen) renderManagePage();
+}
+
+function renderManagePage() {
+  const container = document.getElementById('manage-sections-container');
+  container.innerHTML = '';
+
+  SECTION_META.forEach(meta => {
+    const sec = document.createElement('div');
+    sec.className = 'manage-section';
+    sec.innerHTML = `
+      <div class="manage-section-header" onclick="toggleManageSection('body_${meta.key}', this)">
+        <span class="manage-section-title">${meta.label}</span>
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span class="manage-section-count" id="count_${meta.key}">${data[meta.key].length} items</span>
+          <span class="chevron">▾</span>
+        </span>
+      </div>
+      <div class="manage-section-body" id="body_${meta.key}">
+        <div id="items_${meta.key}"></div>
+        <div class="add-item-row">
+          <input class="add-item-input" id="input_${meta.key}" placeholder="Add new item…" onkeydown="if(event.key==='Enter') addItem('${meta.key}')">
+          <button class="btn-add" onclick="addItem('${meta.key}')">Add</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(sec);
+    renderManageItems(meta.key);
+  });
+}
+
+function toggleManageSection(bodyId, headerEl) {
+  const body = document.getElementById(bodyId);
+  const chevron = headerEl.querySelector('.chevron');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+}
+
+function renderManageItems(key) {
+  const container = document.getElementById(`items_${key}`);
+  if (!container) return;
+  container.innerHTML = '';
+  data[key].forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'manage-item-row';
+    row.innerHTML = `
+      <span class="manage-item-text">${item}</span>
+      <button class="btn-delete" onclick="deleteItem('${key}', ${i})" title="Delete">×</button>
+    `;
+    container.appendChild(row);
+  });
+  const countEl = document.getElementById(`count_${key}`);
+  if (countEl) countEl.textContent = `${data[key].length} items`;
+}
+
+function deleteItem(key, index) {
+  data[key].splice(index, 1);
+  saveData();
+  renderManageItems(key);
+}
+
+function addItem(key) {
+  const input = document.getElementById(`input_${key}`);
+  const val = input.value.trim();
+  if (!val) return;
+  data[key].push(val);
+  saveData();
+  renderManageItems(key);
+  input.value = '';
+  input.focus();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+
+document.getElementById('list-date').textContent = todayStr();
+document.getElementById('app-focus').textContent = `with a Focus on ${pickOne(data.nouns)}`;
+</script>
+</body>
+</html>
